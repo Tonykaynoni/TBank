@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">T-Bank</string>
+    <string name="account_prompt">Choose a Account</string>
+    <string-array name="account_type">
+        <item>Student Savings</item>
+        <item>Savings</item>
+        <item>Current</item>
+
+    </string-array>
+</resources>
