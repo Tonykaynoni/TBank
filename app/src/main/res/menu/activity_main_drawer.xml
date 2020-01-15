@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/homenav" android:icon="@android:drawable/ic_dialog_dialer"
+            android:title="Home" />
+        <item android:id="@+id/check_bal_nav" android:icon="@android:drawable/ic_dialog_dialer"
+            android:title="Check Balance" />
+        <item android:id="@+id/history_nav" android:icon="@android:drawable/ic_dialog_dialer"
+            android:title="Transaction History" />
+    </group>
+
+    <item android:title="Profile">
+        <menu>
+            <item android:id="@+id/profile_nav" android:icon="@android:drawable/btn_star"
+                android:title="Edit Profile" />
+            <item android:id="@+id/logout_nav" android:icon="@android:drawable/ic_menu_send"
+                android:title="Logout" />
+        </menu>
+    </item>
+
+</menu>

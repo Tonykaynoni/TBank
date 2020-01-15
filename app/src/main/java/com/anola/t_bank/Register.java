@@ -9,6 +9,8 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -21,6 +23,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -47,30 +50,57 @@ public class Register extends AppCompatActivity implements AdapterView.OnItemSel
         account_type = findViewById(R.id.acct_type);
         loginBtn = findViewById(R.id.loginBtn);
         regBtn = findViewById(R.id.regBtn);
+        myAccount_type = "Student Savings";
 
+//        ArrayAdapter<String> adapter = new ArrayAdapter<>(Register.this, android.R.layout.simple_list_item_1, account_type);
+//        account_type.setAdapter(adapter);
+
+        account_type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+              if(position == 0){
+                  myAccount_type = "Student Savings";
+              }
+              if(position == 1){
+                  myAccount_type = "Savings";
+              }
+
+              if(position == 2){
+                    myAccount_type = "Current";
+              }
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
         regBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
+                    //account_type.fin
+                    myUsername = username.getText().toString();
+                    myPassword = password.getText().toString();
+                    myDob = dob.getText().toString();
+                    myAddress = address.getText().toString();
+                    fullName = fullname.getText().toString();
 
-                myUsername = username.getText().toString();
-                myPassword = password.getText().toString();
-                myDob = dob.getText().toString();
-                myAddress = address.getText().toString();
-                fullName = fullname.getText().toString();
-
-
-                RequestBody requestBody = new MultipartBody.Builder()
-                        .setType(MultipartBody.FORM)
-                        .addFormDataPart("username", myUsername)
-                        .addFormDataPart("password", myPassword)
-                        .addFormDataPart("dob", myDob)
-                        .addFormDataPart("address", myAddress)
-                        .addFormDataPart("fullname", fullName)
-                        .addFormDataPart("account_type", "savings")
-                        .build();
-                new Register.Mybackground().execute(requestBody);
-
+                if(!myUsername.isEmpty() && !myPassword.isEmpty() && !myDob.isEmpty() && !fullName.isEmpty() && !myAddress.isEmpty()) {
+                    RequestBody requestBody = new MultipartBody.Builder()
+                            .setType(MultipartBody.FORM)
+                            .addFormDataPart("username", myUsername)
+                            .addFormDataPart("password", myPassword)
+                            .addFormDataPart("dob", myDob)
+                            .addFormDataPart("address", myAddress)
+                            .addFormDataPart("fullname", fullName)
+                            .addFormDataPart("account_type", myAccount_type)
+                            .build();
+                    new Register.Mybackground().execute(requestBody);
+                }else{
+                    Toast.makeText(Register.this,"All fields are required",Toast.LENGTH_LONG).show();
+                }
             }
         });
 
@@ -93,7 +123,7 @@ public class Register extends AppCompatActivity implements AdapterView.OnItemSel
             String credentials = "devglan-client" + ":" + "devglan-secret";
             String auth = Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
             Request request = new Request.Builder()
-                    .url("http://192.168.1.41:8084/apiregister")
+                    .url("http://192.168.1.31:8084/apiregister")
                     .post(requestBody)
                     .build();
 
@@ -113,28 +143,15 @@ public class Register extends AppCompatActivity implements AdapterView.OnItemSel
 
         @Override
         protected void onPostExecute(String result) {
-            //text.setText(result);
-            //TokenModel tokenInfo;
-            try {
-                JSONObject obj = new JSONObject(result);
-                //System.out.println("Access Token : " + obj.get("access_token"));
-
-                 // String resp = obj.get("success").toString();
-                  if(obj.get("response").equals("success")){
-                      Toast.makeText(Register.this,"Registration Successful", Toast.LENGTH_LONG).show();
-                  }else{
-                      Toast.makeText(Register.this,"Registration Failed : " + obj.get("response").toString(), Toast.LENGTH_LONG).show();
-                  }
-                  //System.out.println(resp);
-                // Log.e(Register.Mybackground.class.getSimpleName(), "My Info: " + resp);
-
-            } catch (JSONException e) {
-                //Toast.makeText(Register.this,"Registration Failed : Error On Form" + result, Toast.LENGTH_LONG).show();
-
-                Toast.makeText(Register.this,"Registration Failed", Toast.LENGTH_LONG).show();
+            if(result.equals("UserExist")) {
+                Toast.makeText(Register.this, "Registration Failed : Username Already Exist", Toast.LENGTH_LONG).show();
+            }else{
+                Toast.makeText(Register.this, "Registration Successful", Toast.LENGTH_LONG).show();
+                Intent loginPage = new Intent(Register.this,MainActivity.class);
+                startActivity(loginPage);
+                finish();
             }
-
-            Log.e(MainActivity.Mybackground.class.getSimpleName(), "body: " + result);
+            //Log.e(MainActivity.Mybackground.class.getSimpleName(), "body: " + result);
 
         }
     }
